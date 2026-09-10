@@ -1,0 +1,200 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		4E2B26FA5B08497FB25A2B1E /* CameraModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFACC2EED0D04C1D95431D99 /* CameraModel.swift */; };
+		E27AD1AA27D448AC91AED8E6 /* CameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB60ACC87E54452FA313A009 /* CameraPreview.swift */; };
+		37F7267888164AE4A94EB454 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD379373308844B2946C8831 /* CameraView.swift */; };
+		C1C03BDFE7134C3FAF4F5991 /* ImageStamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91FB2BCEE61647D48F17E0F2 /* ImageStamp.swift */; };
+		73BEC7A0112D40BBA2FAB89A /* TimestampCameraApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8F4961A78AB48A4B97A45CC /* TimestampCameraApp.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		6F8DA476A7044644AE33C594 /* TimestampCamera.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TimestampCamera.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CFACC2EED0D04C1D95431D99 /* CameraModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraModel.swift; sourceTree = "<group>"; };
+		CB60ACC87E54452FA313A009 /* CameraPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreview.swift; sourceTree = "<group>"; };
+		DD379373308844B2946C8831 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
+		91FB2BCEE61647D48F17E0F2 /* ImageStamp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStamp.swift; sourceTree = "<group>"; };
+		C8F4961A78AB48A4B97A45CC /* TimestampCameraApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimestampCameraApp.swift; sourceTree = "<group>"; };
+		B97607744AB246FABC317262 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D2B4D1B192744686B319D4B7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = ();
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		717570FE697C4B30894526D9 /* TimestampCamera */ = {
+			isa = PBXGroup;
+			children = (
+				CFACC2EED0D04C1D95431D99 /* CameraModel.swift */,
+				CB60ACC87E54452FA313A009 /* CameraPreview.swift */,
+				DD379373308844B2946C8831 /* CameraView.swift */,
+				91FB2BCEE61647D48F17E0F2 /* ImageStamp.swift */,
+				C8F4961A78AB48A4B97A45CC /* TimestampCameraApp.swift */,
+				B97607744AB246FABC317262 /* Info.plist */,
+			);
+			path = TimestampCamera;
+			sourceTree = "<group>";
+		};
+		482EBA0259534DE6AFA07D26 /* TimestampCamera */ = {
+			isa = PBXGroup;
+			children = (
+				717570FE697C4B30894526D9 /* TimestampCamera */,
+				6F8DA476A7044644AE33C594 /* TimestampCamera.app */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F09A18756CB84BDABFBB0C33 /* TimestampCamera */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5DE737F364A448D69BA50E6C /* Build configuration list for PBXNativeTarget "TimestampCamera" */;
+			buildPhases = (
+				6CD3A1C889F24466BE295413 /* Sources */,
+				D2B4D1B192744686B319D4B7 /* Frameworks */,
+				DAF545AB3E1A403280C8ED5A /* Resources */,
+			);
+			buildRules = ();
+			dependencies = ();
+			name = TimestampCamera;
+			productName = TimestampCamera;
+			productReference = 6F8DA476A7044644AE33C594 /* TimestampCamera.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E48970990DC74E788EAB6993 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					F09A18756CB84BDABFBB0C33 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = C06A7ED83283490AA7EC353C /* Build configuration list for PBXProject "TimestampCamera" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 482EBA0259534DE6AFA07D26;
+			productRefGroup = 482EBA0259534DE6AFA07D26;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F09A18756CB84BDABFBB0C33 /* TimestampCamera */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		DAF545AB3E1A403280C8ED5A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = ();
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		6CD3A1C889F24466BE295413 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4E2B26FA5B08497FB25A2B1E /* CameraModel.swift in Sources */,
+				E27AD1AA27D448AC91AED8E6 /* CameraPreview.swift in Sources */,
+				37F7267888164AE4A94EB454 /* CameraView.swift in Sources */,
+				C1C03BDFE7134C3FAF4F5991 /* ImageStamp.swift in Sources */,
+				73BEC7A0112D40BBA2FAB89A /* TimestampCameraApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		C81E4CE63806443B8BB9F225 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = TimestampCamera/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.TimestampCamera;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		87A0B0425CA3414EB838E77B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = TimestampCamera/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.TimestampCamera;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C06A7ED83283490AA7EC353C /* Build configuration list for PBXProject "TimestampCamera" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C81E4CE63806443B8BB9F225 /* Debug */,
+				87A0B0425CA3414EB838E77B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5DE737F364A448D69BA50E6C /* Build configuration list for PBXNativeTarget "TimestampCamera" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C81E4CE63806443B8BB9F225 /* Debug */,
+				87A0B0425CA3414EB838E77B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E48970990DC74E788EAB6993 /* Project object */;
+}

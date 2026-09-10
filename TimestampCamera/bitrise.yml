@@ -1,0 +1,40 @@
+format_version: "11"
+
+project_type: ios
+
+app:
+  envs:
+  - BITRISE_PROJECT_PATH: TimestampCamera.xcodeproj
+    opts:
+      is_expand: false
+  - BITRISE_SCHEME: TimestampCamera
+    opts:
+      is_expand: false
+
+workflows:
+  primary:
+    description: "Build Timestamp Camera for iOS Simulator (no signing required)."
+    steps:
+    - git-clone@8: {}
+    - xcode-build-for-simulator@1:
+        inputs:
+        - project_path: "$BITRISE_PROJECT_PATH"
+        - scheme: "$BITRISE_SCHEME"
+        - configuration: Debug
+        - destination: "generic/platform=iOS Simulator"
+        - xcconfig_content: |
+            CODE_SIGNING_ALLOWED = NO
+            COMPILER_INDEX_STORE_ENABLE = NO
+    - deploy-to-bitrise-io@2: {}
+
+  archive_development:
+    description: "Archive and export a development IPA for a physical iPhone."
+    steps:
+    - git-clone@8: {}
+    - xcode-archive@4:
+        inputs:
+        - project_path: "$BITRISE_PROJECT_PATH"
+        - scheme: "$BITRISE_SCHEME"
+        - distribution_method: development
+        - automatic_code_signing: apple-id
+    - deploy-to-bitrise-io@2: {}
