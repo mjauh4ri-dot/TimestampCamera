@@ -73,3 +73,7 @@ Source aplikasi tetap menggunakan:
 - Photos
 
 Timestamp yang dibuat aplikasi ditanam langsung ke piksel foto.
+
+
+## V3 build fix
+The Xcode project explicitly targets iOS (`SDKROOT = iphoneos` and `SUPPORTED_PLATFORMS = iphoneos iphonesimulator`) so Bitrise can build the simulator target.

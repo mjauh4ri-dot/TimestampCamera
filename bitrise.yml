@@ -1,4 +1,6 @@
-format_version: "11"
+format_version: "26"
+
+default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 
 project_type: ios
 
@@ -13,28 +15,21 @@ app:
 
 workflows:
   primary:
-    description: "Build Timestamp Camera for iOS Simulator (no signing required)."
+    summary: Build TimestampCamera for iOS Simulator.
     steps:
     - git-clone@8: {}
-    - xcode-build-for-simulator@1:
+    - xcode-build-for-simulator:
         inputs:
         - project_path: "$BITRISE_PROJECT_PATH"
         - scheme: "$BITRISE_SCHEME"
-        - configuration: Debug
         - destination: "generic/platform=iOS Simulator"
+        - configuration: "Debug"
         - xcconfig_content: |
             CODE_SIGNING_ALLOWED = NO
             COMPILER_INDEX_STORE_ENABLE = NO
     - deploy-to-bitrise-io@2: {}
 
-  archive_development:
-    description: "Archive and export a development IPA for a physical iPhone."
-    steps:
-    - git-clone@8: {}
-    - xcode-archive@4:
-        inputs:
-        - project_path: "$BITRISE_PROJECT_PATH"
-        - scheme: "$BITRISE_SCHEME"
-        - distribution_method: development
-        - automatic_code_signing: apple-id
-    - deploy-to-bitrise-io@2: {}
+meta:
+  bitrise.io:
+    stack: osx-xcode-26.6.x
+    machine_type_id: g2.mac.large
