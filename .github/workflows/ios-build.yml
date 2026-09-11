@@ -46,41 +46,44 @@ jobs:
           test -f "$APP/Info.plist"
           test -f "$APP/TimestampCamera"
 
-          # Remove any incomplete signing artifacts.
           rm -rf "$APP/_CodeSignature"
           rm -f "$APP/embedded.mobileprovision"
 
           cp -R "$APP" "Payload/TimestampCamera.app"
 
-      - name: Validate app metadata
+      - name: Validate app
         run: |
           APP="Payload/TimestampCamera.app"
 
-          echo "=== Bundle Identifier ==="
+          echo "=== APP INFO ==="
+          ls -la "$APP"
+
+          echo "=== INFO.PLIST ==="
           /usr/libexec/PlistBuddy \
             -c "Print :CFBundleIdentifier" \
             "$APP/Info.plist"
 
-          echo "=== Executable ==="
-          /usr/libexec/PlistBuddy \
-            -c "Print :CFBundleExecutable" \
-            "$APP/Info.plist"
-
-          echo "=== Minimum iOS ==="
-          /usr/libexec/PlistBuddy \
-            -c "Print :MinimumOSVersion" \
-            "$APP/Info.plist" || true
-
-          echo "=== Executable check ==="
+          echo "=== EXECUTABLE FILE ==="
+          test -f "$APP/TimestampCamera"
           file "$APP/TimestampCamera"
 
-          echo "=== Code signature directory ==="
+          echo "=== CODE SIGNATURE CHECK ==="
           if [ -d "$APP/_CodeSignature" ]; then
-            echo "ERROR: Code signature still exists"
+            echo "ERROR: _CodeSignature still exists"
             exit 1
           else
-            echo "OK: app is unsigned"
+            echo "OK: no _CodeSignature"
           fi
+
+          echo "=== PROVISIONING PROFILE CHECK ==="
+          if [ -f "$APP/embedded.mobileprovision" ]; then
+            echo "ERROR: embedded.mobileprovision still exists"
+            exit 1
+          else
+            echo "OK: no embedded.mobileprovision"
+          fi
+
+          echo "=== APP VALIDATION PASSED ==="
 
       - name: Create IPA
         run: |
@@ -88,7 +91,11 @@ jobs:
 
       - name: Verify IPA
         run: |
+          echo "=== IPA CONTENTS ==="
           unzip -l TimestampCamera.ipa
+
+          echo "=== IPA FILE ==="
+          ls -lh TimestampCamera.ipa
 
           test -f TimestampCamera.ipa
 
