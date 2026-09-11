@@ -36,7 +36,7 @@ jobs:
             CODE_SIGN_IDENTITY="" \
             COMPILER_INDEX_STORE_ENABLE=NO
 
-      - name: Prepare clean IPA
+      - name: Prepare app
         run: |
           mkdir -p Payload
 
@@ -51,39 +51,46 @@ jobs:
 
           cp -R "$APP" "Payload/TimestampCamera.app"
 
-      - name: Validate app
+      - name: Ad-hoc sign app
         run: |
           APP="Payload/TimestampCamera.app"
 
-          echo "=== APP INFO ==="
-          ls -la "$APP"
+          echo "=== BEFORE SIGNING ==="
+          file "$APP/TimestampCamera"
 
-          echo "=== INFO.PLIST ==="
+          echo "=== AD-HOC SIGNING ==="
+          /usr/bin/codesign \
+            --force \
+            --deep \
+            --sign - \
+            "$APP"
+
+          echo "=== SIGNATURE ==="
+          /usr/bin/codesign \
+            -dvvv \
+            "$APP"
+
+      - name: Verify app
+        run: |
+          APP="Payload/TimestampCamera.app"
+
+          echo "=== BUNDLE ID ==="
           /usr/libexec/PlistBuddy \
             -c "Print :CFBundleIdentifier" \
             "$APP/Info.plist"
 
-          echo "=== EXECUTABLE FILE ==="
+          echo "=== EXECUTABLE ==="
           test -f "$APP/TimestampCamera"
           file "$APP/TimestampCamera"
 
-          echo "=== CODE SIGNATURE CHECK ==="
-          if [ -d "$APP/_CodeSignature" ]; then
-            echo "ERROR: _CodeSignature still exists"
-            exit 1
-          else
-            echo "OK: no _CodeSignature"
-          fi
+          echo "=== CODE SIGNATURE ==="
+          /usr/bin/codesign \
+            --verify \
+            --deep \
+            --strict \
+            "$APP"
 
-          echo "=== PROVISIONING PROFILE CHECK ==="
-          if [ -f "$APP/embedded.mobileprovision" ]; then
-            echo "ERROR: embedded.mobileprovision still exists"
-            exit 1
-          else
-            echo "OK: no embedded.mobileprovision"
-          fi
-
-          echo "=== APP VALIDATION PASSED ==="
+          echo "=== SIGNATURE VALID ==="
 
       - name: Create IPA
         run: |
@@ -102,6 +109,6 @@ jobs:
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: TimestampCamera-IPA-Fixed
+          name: TimestampCamera-IPA-AdHoc
           path: TimestampCamera.ipa
           retention-days: 7
