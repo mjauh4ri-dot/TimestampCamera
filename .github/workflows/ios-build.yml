@@ -17,6 +17,11 @@ jobs:
       - name: Show Xcode version
         run: |
           xcodebuild -version
+          xcode-select -p
+
+      - name: Clean
+        run: |
+          rm -rf build Payload TimestampCamera.ipa
 
       - name: Build unsigned iOS app
         run: |
@@ -28,21 +33,68 @@ jobs:
             -derivedDataPath build \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
             COMPILER_INDEX_STORE_ENABLE=NO
 
-      - name: Create IPA
+      - name: Prepare clean IPA
         run: |
           mkdir -p Payload
 
-          cp -R \
-            build/Build/Products/Release-iphoneos/TimestampCamera.app \
-            Payload/
+          APP="build/Build/Products/Release-iphoneos/TimestampCamera.app"
 
-          zip -r TimestampCamera.ipa Payload
+          test -d "$APP"
+          test -f "$APP/Info.plist"
+          test -f "$APP/TimestampCamera"
+
+          # Remove any incomplete signing artifacts.
+          rm -rf "$APP/_CodeSignature"
+          rm -f "$APP/embedded.mobileprovision"
+
+          cp -R "$APP" "Payload/TimestampCamera.app"
+
+      - name: Validate app metadata
+        run: |
+          APP="Payload/TimestampCamera.app"
+
+          echo "=== Bundle Identifier ==="
+          /usr/libexec/PlistBuddy \
+            -c "Print :CFBundleIdentifier" \
+            "$APP/Info.plist"
+
+          echo "=== Executable ==="
+          /usr/libexec/PlistBuddy \
+            -c "Print :CFBundleExecutable" \
+            "$APP/Info.plist"
+
+          echo "=== Minimum iOS ==="
+          /usr/libexec/PlistBuddy \
+            -c "Print :MinimumOSVersion" \
+            "$APP/Info.plist" || true
+
+          echo "=== Executable check ==="
+          file "$APP/TimestampCamera"
+
+          echo "=== Code signature directory ==="
+          if [ -d "$APP/_CodeSignature" ]; then
+            echo "ERROR: Code signature still exists"
+            exit 1
+          else
+            echo "OK: app is unsigned"
+          fi
+
+      - name: Create IPA
+        run: |
+          /usr/bin/zip -qry TimestampCamera.ipa Payload
+
+      - name: Verify IPA
+        run: |
+          unzip -l TimestampCamera.ipa
+
+          test -f TimestampCamera.ipa
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: TimestampCamera-IPA
+          name: TimestampCamera-IPA-Fixed
           path: TimestampCamera.ipa
           retention-days: 7
