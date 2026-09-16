@@ -1,1 +1,330 @@
-<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><title>Timestamp Camera</title><link rel="manifest" href="manifest.json"><link rel="stylesheet" href="style.css"></head><body><main class="app"><video id="video" autoplay playsinline muted></video><canvas id="canvas" hidden></canvas><header><button id="switch">↻</button><b>Timestamp Camera</b><button id="settings">⚙︎</button></header><div id="stamp"><div id="date"></div><div id="time"></div><div id="loc">📍 Mencari lokasi…</div></div><footer><button id="flash">⚡</button><button id="capture" class="shutter"><i></i></button><button id="help">▣</button></footer><section id="start"><h2>Timestamp Camera</h2><p>Gunakan kamera dan lokasi untuk membuat foto dengan timestamp.</p><button id="open">Buka Kamera</button><small>Kamera Safari membutuhkan HTTPS.</small></section><section id="panel" hidden><h2>Pengaturan</h2><label><input id="showLoc" type="checkbox" checked> Tampilkan lokasi</label><label><input id="showSec" type="checkbox" checked> Tampilkan detik</label><label>Ukuran <input id="size" type="range" min="18" max="52" value="28"></label><label>Posisi <select id="pos"><option value="bl">Kiri bawah</option><option value="br">Kanan bawah</option><option value="tl">Kiri atas</option><option value="tr">Kanan atas</option></select></label><label>Watermark <input id="wm" maxlength="40" placeholder="MJ SERVICE"></label><button id="close">Tutup</button></section><div id="toast"></div></main><script src="app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width,
+        initial-scale=1,
+        maximum-scale=1,
+        user-scalable=no,
+        viewport-fit=cover"
+    >
+
+    <meta name="theme-color" content="#000000">
+
+    <meta
+        name="apple-mobile-web-app-capable"
+        content="yes"
+    >
+
+    <meta
+        name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent"
+    >
+
+    <title>Timestamp Camera</title>
+
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div id="cameraApp">
+
+    <!-- CAMERA -->
+    <video
+        id="camera"
+        autoplay
+        playsinline
+        muted
+    ></video>
+
+    <!-- CANVAS FOTO -->
+    <canvas id="photoCanvas"></canvas>
+
+
+    <!-- GRID CAMERA -->
+    <div id="grid" class="camera-grid">
+
+        <div class="vertical v1"></div>
+        <div class="vertical v2"></div>
+
+        <div class="horizontal h1"></div>
+        <div class="horizontal h2"></div>
+
+    </div>
+
+
+    <!-- TOP BAR -->
+    <div class="topBar">
+
+        <button
+            id="flashButton"
+            class="cameraButton"
+        >
+            ⚡
+        </button>
+
+        <div class="cameraTitle">
+            Timestamp Camera
+        </div>
+
+        <button
+            id="cameraSwitch"
+            class="cameraButton"
+        >
+            🔄
+        </button>
+
+    </div>
+
+
+    <!-- ZOOM -->
+    <div class="zoomControl">
+
+        <button
+            id="zoomMinus"
+            class="zoomButton"
+        >
+            −
+        </button>
+
+        <span id="zoomValue">
+            1×
+        </span>
+
+        <button
+            id="zoomPlus"
+            class="zoomButton"
+        >
+            +
+        </button>
+
+    </div>
+
+
+    <!-- TIMESTAMP -->
+    <div
+        id="timestamp"
+        class="timestamp"
+    >
+
+        <span id="timestampText">
+            16/09/2026 13:58:42
+        </span>
+
+        <span
+            id="locationText"
+            class="location"
+        ></span>
+
+        <span
+            id="watermarkText"
+            class="watermark"
+        ></span>
+
+    </div>
+
+
+    <!-- FOCUS -->
+    <div
+        id="focusBox"
+        class="focusBox"
+    ></div>
+
+
+    <!-- MODE -->
+    <div class="cameraModes">
+
+        <span>PANO</span>
+
+        <span>VIDEO</span>
+
+        <span class="active">
+            FOTO
+        </span>
+
+        <span>PORTRAIT</span>
+
+    </div>
+
+
+    <!-- BOTTOM -->
+    <div class="bottomBar">
+
+        <button
+            id="galleryButton"
+            class="bottomButton"
+        >
+            ▣
+        </button>
+
+        <button
+            id="captureButton"
+            class="captureButton"
+        >
+            <span></span>
+        </button>
+
+        <button
+            id="settingsButton"
+            class="bottomButton"
+        >
+            ⚙
+        </button>
+
+    </div>
+
+
+    <!-- START CAMERA -->
+    <div
+        id="startScreen"
+        class="startScreen"
+    >
+
+        <div class="startBox">
+
+            <h1>
+                Timestamp Camera
+            </h1>
+
+            <p>
+                Kamera dengan tanggal dan waktu.
+            </p>
+
+            <button id="startCamera">
+                BUKA KAMERA
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- SETTINGS -->
+    <div
+        id="settingsPanel"
+        class="settingsPanel hidden"
+    >
+
+        <div class="settingsHeader">
+
+            <h2>
+                Pengaturan
+            </h2>
+
+            <button
+                id="closeSettings"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <label>
+
+            <input
+                id="showLocation"
+                type="checkbox"
+            >
+
+            Tampilkan GPS
+
+        </label>
+
+
+        <label>
+
+            <input
+                id="showSeconds"
+                type="checkbox"
+                checked
+            >
+
+            Tampilkan detik
+
+        </label>
+
+
+        <label>
+
+            Ukuran timestamp
+
+            <input
+                id="fontSize"
+                type="range"
+                min="18"
+                max="60"
+                value="30"
+            >
+
+        </label>
+
+
+        <label>
+
+            Posisi timestamp
+
+            <select id="timestampPosition">
+
+                <option value="bottom-left">
+                    Kiri bawah
+                </option>
+
+                <option value="bottom-right">
+                    Kanan bawah
+                </option>
+
+                <option value="top-left">
+                    Kiri atas
+                </option>
+
+                <option value="top-right">
+                    Kanan atas
+                </option>
+
+            </select>
+
+        </label>
+
+
+        <label>
+
+            Watermark
+
+            <input
+                id="watermarkInput"
+                type="text"
+                maxlength="40"
+                placeholder="Contoh: MJ SERVICE"
+            >
+
+        </label>
+
+
+        <button
+            id="closeSettingsButton"
+            class="closeSettingsButton"
+        >
+            SELESAI
+        </button>
+
+    </div>
+
+
+    <!-- TOAST -->
+    <div
+        id="toast"
+        class="toast"
+    ></div>
+
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>
