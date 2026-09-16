@@ -1,78 +1,22 @@
-/* =========================================
-   TIMESTAMP CAMERA V2
-   ========================================= */
+const camera = document.getElementById("camera");
+const canvas = document.getElementById("photoCanvas");
 
-const camera =
-    document.getElementById("camera");
+const startScreen = document.getElementById("startScreen");
+const startCameraButton = document.getElementById("startCamera");
 
-const canvas =
-    document.getElementById("photoCanvas");
+const timestamp = document.getElementById("timestamp");
+const timestampText = document.getElementById("timestampText");
+const locationText = document.getElementById("locationText");
+const watermarkText = document.getElementById("watermarkText");
 
-const timestamp =
-    document.getElementById("timestamp");
+const captureButton = document.getElementById("captureButton");
+const cameraSwitch = document.getElementById("cameraSwitch");
 
-const timestampText =
-    document.getElementById("timestampText");
-
-const locationText =
-    document.getElementById("locationText");
-
-const watermarkText =
-    document.getElementById("watermarkText");
-
-const startScreen =
-    document.getElementById("startScreen");
-
-const settingsPanel =
-    document.getElementById("settingsPanel");
-
-const zoomValue =
-    document.getElementById("zoomValue");
-
-
-/* =========================================
-   VARIABLES
-   ========================================= */
-
-let stream = null;
-
-let facingMode = "environment";
-
-let currentZoom = 1;
-
-let flashEnabled = false;
-
-let gpsLatitude = null;
-
-let gpsLongitude = null;
-
-
-/* =========================================
-   ELEMENTS
-   ========================================= */
-
-const startCameraButton =
-    document.getElementById("startCamera");
-
-const captureButton =
-    document.getElementById("captureButton");
-
-const cameraSwitch =
-    document.getElementById("cameraSwitch");
-
-const flashButton =
-    document.getElementById("flashButton");
-
-const settingsButton =
-    document.getElementById("settingsButton");
-
-const closeSettings =
-    document.getElementById("closeSettings");
-
+const settingsButton = document.getElementById("settingsButton");
+const settingsPanel = document.getElementById("settingsPanel");
+const closeSettings = document.getElementById("closeSettings");
 const closeSettingsButton =
-    document.getElementById(
-        "closeSettingsButton"
-    );
+    document.getElementById("closeSettingsButton");
 
 const showLocation =
     document.getElementById("showLocation");
@@ -84,269 +28,75 @@ const fontSize =
     document.getElementById("fontSize");
 
 const timestampPosition =
-    document.getElementById(
-        "timestampPosition"
-    );
+    document.getElementById("timestampPosition");
 
 const watermarkInput =
-    document.getElementById(
-        "watermarkInput"
-    );
+    document.getElementById("watermarkInput");
 
-const zoomMinus =
-    document.getElementById("zoomMinus");
-
-const zoomPlus =
-    document.getElementById("zoomPlus");
+const toast =
+    document.getElementById("toast");
 
 
-/* =========================================
-   START CAMERA
-   ========================================= */
+let stream = null;
 
-async function startCamera() {
+let facingMode = "environment";
 
-    try {
-
-        if (stream) {
-
-            stream
-                .getTracks()
-                .forEach(track =>
-                    track.stop()
-                );
-        }
-
-
-        stream =
-            await navigator
-                .mediaDevices
-                .getUserMedia({
-
-                    video: {
-
-                        facingMode:
-                            facingMode,
-
-                        width: {
-                            ideal: 1920
-                        },
-
-                        height: {
-                            ideal: 1080
-                        }
-                    },
-
-                    audio: false
-                });
-
-
-        camera.srcObject =
-            stream;
-
-
-        startScreen.style.display =
-            "none";
-
-
-        resetZoom();
-
-        requestGPS();
-
-
-        showToast(
-            "Kamera siap"
-        );
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        showToast(
-            "Tidak dapat membuka kamera. Izinkan Camera di Safari."
-        );
-    }
-}
+let latitude = null;
+let longitude = null;
 
 
 /* =========================================
-   CAMERA SWITCH
-   ========================================= */
+   INITIAL
+========================================= */
 
-cameraSwitch.addEventListener(
-    "click",
-    async () => {
-
-        facingMode =
-            facingMode === "environment"
-                ? "user"
-                : "environment";
-
-        await startCamera();
-    }
-);
-
-
-/* =========================================
-   GPS
-   ========================================= */
-
-function requestGPS() {
-
-    if (
-        !navigator.geolocation
-    ) {
-
-        locationText.textContent =
-            "";
-
-        return;
-    }
-
-
-    navigator
-        .geolocation
-        .getCurrentPosition(
-
-            position => {
-
-                gpsLatitude =
-                    position.coords.latitude;
-
-                gpsLongitude =
-                    position.coords.longitude;
-
-
-                updateLocationDisplay();
-            },
-
-            error => {
-
-                console.log(
-                    "GPS:",
-                    error
-                );
-
-                locationText.textContent =
-                    "";
-            },
-
-            {
-
-                enableHighAccuracy:
-                    true,
-
-                timeout:
-                    10000,
-
-                maximumAge:
-                    0
-            }
-        );
-}
-
-
-/* =========================================
-   LOCATION DISPLAY
-   ========================================= */
-
-function updateLocationDisplay() {
-
-    if (
-        !showLocation.checked
-    ) {
-
-        locationText.textContent =
-            "";
-
-        return;
-    }
-
-
-    if (
-        gpsLatitude === null
-    ) {
-
-        locationText.textContent =
-            "📍 Mencari lokasi…";
-
-        return;
-    }
-
-
-    locationText.textContent =
-        `📍 ${gpsLatitude.toFixed(6)}, ${gpsLongitude.toFixed(6)}`;
-}
+updateTimestamp();
 
 
 /* =========================================
    TIMESTAMP
-   ========================================= */
+========================================= */
 
 function updateTimestamp() {
 
-    const now =
-        new Date();
-
+    const now = new Date();
 
     const day =
-        String(
-            now.getDate()
-        ).padStart(2, "0");
-
+        String(now.getDate()).padStart(2, "0");
 
     const month =
-        String(
-            now.getMonth() + 1
-        ).padStart(2, "0");
-
+        String(now.getMonth() + 1).padStart(2, "0");
 
     const year =
         now.getFullYear();
 
+    const hour =
+        String(now.getHours()).padStart(2, "0");
 
-    const hours =
-        String(
-            now.getHours()
-        ).padStart(2, "0");
+    const minute =
+        String(now.getMinutes()).padStart(2, "0");
 
-
-    const minutes =
-        String(
-            now.getMinutes()
-        ).padStart(2, "0");
+    const second =
+        String(now.getSeconds()).padStart(2, "0");
 
 
-    const seconds =
-        String(
-            now.getSeconds()
-        ).padStart(2, "0");
+    let text =
+        `${day}/${month}/${year} ${hour}:${minute}`;
 
 
-    let result =
-        `${day}/${month}/${year} ${hours}:${minutes}`;
+    if (showSeconds.checked) {
 
-
-    if (
-        showSeconds.checked
-    ) {
-
-        result +=
-            `:${seconds}`;
+        text += `:${second}`;
     }
 
 
-    timestampText.textContent =
-        result;
-
-
-    updateLocationDisplay();
+    timestampText.textContent = text;
 
 
     watermarkText.textContent =
         watermarkInput.value;
 
+
+    updateGPSDisplay();
 }
 
 
@@ -355,248 +105,310 @@ setInterval(
     250
 );
 
-updateTimestamp();
+
+/* =========================================
+   GPS
+========================================= */
+
+function startGPS() {
+
+    if (!navigator.geolocation) {
+
+        return;
+    }
+
+
+    navigator.geolocation.getCurrentPosition(
+
+        function(position) {
+
+            latitude =
+                position.coords.latitude;
+
+            longitude =
+                position.coords.longitude;
+
+            updateGPSDisplay();
+        },
+
+        function(error) {
+
+            console.log(
+                "GPS error:",
+                error
+            );
+
+            locationText.textContent = "";
+        },
+
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        }
+    );
+}
+
+
+function updateGPSDisplay() {
+
+    if (!showLocation.checked) {
+
+        locationText.textContent = "";
+
+        return;
+    }
+
+
+    if (
+        latitude === null ||
+        longitude === null
+    ) {
+
+        locationText.textContent =
+            "📍 Mencari lokasi...";
+
+        return;
+    }
+
+
+    locationText.textContent =
+        `📍 ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+}
 
 
 /* =========================================
-   SETTINGS
-   ========================================= */
+   OPEN CAMERA
+========================================= */
 
-settingsButton.addEventListener(
-    "click",
-    () => {
+async function openCamera() {
 
-        settingsPanel.classList
-            .remove("hidden");
-    }
-);
+    try {
 
+        /*
+         * Pastikan browser mendukung kamera
+         */
 
-closeSettings.addEventListener(
-    "click",
-    () => {
+        if (
+            !navigator.mediaDevices ||
+            !navigator.mediaDevices.getUserMedia
+        ) {
 
-        settingsPanel.classList
-            .add("hidden");
-    }
-);
+            showError(
+                "Kamera tidak tersedia di browser ini."
+            );
 
-
-closeSettingsButton.addEventListener(
-    "click",
-    () => {
-
-        settingsPanel.classList
-            .add("hidden");
-    }
-);
+            return;
+        }
 
 
-/* =========================================
-   SHOW LOCATION
-   ========================================= */
+        /*
+         * Matikan kamera lama
+         */
 
-showLocation.addEventListener(
-    "change",
-    () => {
+        if (stream) {
 
-        updateLocationDisplay();
-    }
-);
+            stream
+                .getTracks()
+                .forEach(
+                    track => track.stop()
+                );
 
-
-/* =========================================
-   FONT SIZE
-   ========================================= */
-
-fontSize.addEventListener(
-    "input",
-    () => {
-
-        timestamp.style.fontSize =
-            `${fontSize.value}px`;
-    }
-);
+            stream = null;
+        }
 
 
-/* =========================================
-   POSITION
-   ========================================= */
+        /*
+         * Request kamera
+         *
+         * Kita sengaja menggunakan
+         * konfigurasi sederhana agar
+         * kompatibel dengan Safari iPhone.
+         */
 
-timestampPosition.addEventListener(
-    "change",
-    () => {
+        stream =
+            await navigator.mediaDevices.getUserMedia({
 
-        timestamp.classList.remove(
-            "bottom-right",
-            "top-left",
-            "top-right"
+                video: {
+
+                    facingMode: {
+                        ideal: facingMode
+                    }
+
+                },
+
+                audio: false
+            });
+
+
+        /*
+         * Masukkan stream ke video
+         */
+
+        camera.srcObject = stream;
+
+        camera.muted = true;
+
+        camera.playsInline = true;
+
+        camera.setAttribute(
+            "playsinline",
+            ""
+        );
+
+        camera.setAttribute(
+            "webkit-playsinline",
+            ""
         );
 
 
-        const position =
-            timestampPosition.value;
+        /*
+         * Tunggu video siap
+         */
 
+        await new Promise(
+            function(resolve) {
 
-        if (
-            position !==
-            "bottom-left"
-        ) {
+                if (
+                    camera.readyState >= 2
+                ) {
 
-            timestamp.classList.add(
-                position
-            );
-        }
-    }
-);
+                    resolve();
 
-
-/* =========================================
-   WATERMARK
-   ========================================= */
-
-watermarkInput.addEventListener(
-    "input",
-    () => {
-
-        watermarkText.textContent =
-            watermarkInput.value;
-    }
-);
-
-
-/* =========================================
-   ZOOM
-   ========================================= */
-
-function resetZoom() {
-
-    currentZoom = 1;
-
-    zoomValue.textContent =
-        "1×";
-
-    camera.style.transform =
-        "scale(1)";
-}
-
-
-function applyZoom() {
-
-    camera.style.transform =
-        `scale(${currentZoom})`;
-
-    zoomValue.textContent =
-        `${currentZoom.toFixed(1)}×`;
-}
-
-
-zoomPlus.addEventListener(
-    "click",
-    () => {
-
-        currentZoom =
-            Math.min(
-                5,
-                currentZoom + 0.5
-            );
-
-        applyZoom();
-    }
-);
-
-
-zoomMinus.addEventListener(
-    "click",
-    () => {
-
-        currentZoom =
-            Math.max(
-                1,
-                currentZoom - 0.5
-            );
-
-        applyZoom();
-    }
-);
-
-
-/* =========================================
-   FLASH
-   ========================================= */
-
-flashButton.addEventListener(
-    "click",
-    async () => {
-
-        flashEnabled =
-            !flashEnabled;
-
-
-        const track =
-            stream?.getVideoTracks()[0];
-
-
-        if (
-            track &&
-            track.getCapabilities
-        ) {
-
-            const capabilities =
-                track.getCapabilities();
-
-
-            if (
-                capabilities.torch
-            ) {
-
-                try {
-
-                    await track.applyConstraints({
-
-                        advanced: [
-                            {
-                                torch:
-                                    flashEnabled
-                            }
-                        ]
-                    });
-
-                } catch (error) {
-
-                    console.log(
-                        error
-                    );
+                    return;
                 }
+
+
+                camera.onloadedmetadata =
+                    function() {
+
+                        resolve();
+                    };
             }
+        );
+
+
+        /*
+         * Mulai video
+         */
+
+        await camera.play();
+
+
+        /*
+         * Hilangkan layar awal
+         */
+
+        startScreen.style.display =
+            "none";
+
+
+        /*
+         * GPS
+         */
+
+        startGPS();
+
+
+        showToast(
+            "Kamera berhasil dibuka"
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Camera error:",
+            error
+        );
+
+
+        /*
+         * Matikan stream jika gagal
+         */
+
+        if (stream) {
+
+            stream
+                .getTracks()
+                .forEach(
+                    track => track.stop()
+                );
+
+            stream = null;
         }
 
 
-        flashButton.style
-            .background =
-            flashEnabled
-                ? "rgba(255,255,255,.35)"
-                : "rgba(0,0,0,.38)";
+        showError(
+            "Kamera gagal dibuka: " +
+            error.name
+        );
+    }
+}
+
+
+/* =========================================
+   START BUTTON
+========================================= */
+
+startCameraButton.addEventListener(
+    "click",
+    function() {
+
+        openCamera();
+
+    }
+);
+
+
+/* =========================================
+   SWITCH CAMERA
+========================================= */
+
+cameraSwitch.addEventListener(
+    "click",
+    async function() {
+
+        if (!stream) {
+
+            await openCamera();
+
+            return;
+        }
+
+
+        facingMode =
+            facingMode === "environment"
+                ? "user"
+                : "environment";
+
+
+        await openCamera();
     }
 );
 
 
 /* =========================================
    TAKE PHOTO
-   ========================================= */
+========================================= */
 
 captureButton.addEventListener(
     "click",
-    capturePhoto
+    function() {
+
+        takePhoto();
+
+    }
 );
 
 
-function capturePhoto() {
+function takePhoto() {
 
     if (!stream) {
 
-        showToast(
-            "Buka kamera terlebih dahulu."
+        showError(
+            "Kamera belum dibuka."
         );
 
         return;
@@ -610,12 +422,9 @@ function capturePhoto() {
         camera.videoHeight;
 
 
-    if (
-        !width ||
-        !height
-    ) {
+    if (!width || !height) {
 
-        showToast(
+        showError(
             "Kamera belum siap."
         );
 
@@ -623,30 +432,20 @@ function capturePhoto() {
     }
 
 
-    canvas.width =
-        width;
-
-    canvas.height =
-        height;
+    canvas.width = width;
+    canvas.height = height;
 
 
     const ctx =
-        canvas.getContext(
-            "2d"
-        );
+        canvas.getContext("2d");
 
 
     /*
-       FOTO ASLI
-    */
+     * Gambar kamera
+     */
 
     ctx.save();
 
-
-    /*
-       Jika kamera depan,
-       gambar dibalik seperti preview.
-    */
 
     if (
         facingMode === "user"
@@ -677,66 +476,48 @@ function capturePhoto() {
 
 
     /*
-       TIMESTAMP
-    */
+     * TIMESTAMP
+     */
 
-    const now =
-        new Date();
-
+    const now = new Date();
 
     const day =
-        String(
-            now.getDate()
-        ).padStart(2, "0");
-
+        String(now.getDate()).padStart(2, "0");
 
     const month =
-        String(
-            now.getMonth() + 1
-        ).padStart(2, "0");
-
+        String(now.getMonth() + 1).padStart(2, "0");
 
     const year =
         now.getFullYear();
 
+    const hour =
+        String(now.getHours()).padStart(2, "0");
 
-    const hours =
-        String(
-            now.getHours()
-        ).padStart(2, "0");
+    const minute =
+        String(now.getMinutes()).padStart(2, "0");
 
-
-    const minutes =
-        String(
-            now.getMinutes()
-        ).padStart(2, "0");
+    const second =
+        String(now.getSeconds()).padStart(2, "0");
 
 
-    const seconds =
-        String(
-            now.getSeconds()
-        ).padStart(2, "0");
+    let stamp =
+        `${day}/${month}/${year} ${hour}:${minute}`;
 
 
-    let timestampValue =
-        `${day}/${month}/${year} ${hours}:${minutes}`;
+    if (showSeconds.checked) {
 
-
-    if (
-        showSeconds.checked
-    ) {
-
-        timestampValue +=
-            `:${seconds}`;
+        stamp += `:${second}`;
     }
 
 
-    const fontSizeValue =
+    /*
+     * Ukuran tulisan
+     */
+
+    const size =
         Math.max(
             24,
-            Math.round(
-                width / 55
-            )
+            Math.round(width / 55)
         );
 
 
@@ -746,55 +527,47 @@ function capturePhoto() {
         );
 
 
-    /*
-       TEKS
-       TANPA BACKGROUND
-    */
-
     ctx.font =
-        `600 ${fontSizeValue}px Arial`;
+        `600 ${size}px Arial`;
 
 
     ctx.fillStyle =
         "#ffffff";
 
 
+    /*
+     * SHADOW SAJA
+     *
+     * Tidak ada background.
+     */
+
     ctx.shadowColor =
-        "rgba(0,0,0,.90)";
+        "rgba(0,0,0,0.9)";
 
+    ctx.shadowBlur = 5;
 
-    ctx.shadowBlur =
-        5;
+    ctx.shadowOffsetX = 1;
 
-
-    ctx.shadowOffsetX =
-        1;
-
-    ctx.shadowOffsetY =
-        1;
-
-
-    let x =
-        margin;
-
-
-    let y =
-        height -
-        margin;
+    ctx.shadowOffsetY = 1;
 
 
     /*
-       POSISI
-    */
+     * Posisi default:
+     * kiri bawah
+     */
+
+    let x = margin;
+
+    let y =
+        height - margin;
+
 
     const position =
         timestampPosition.value;
 
 
     const textWidth =
-        ctx.measureText(
-            timestampValue
-        ).width;
+        ctx.measureText(stamp).width;
 
 
     if (
@@ -816,7 +589,7 @@ function capturePhoto() {
 
         y =
             margin +
-            fontSizeValue;
+            size;
     }
 
 
@@ -832,93 +605,85 @@ function capturePhoto() {
 
         y =
             margin +
-            fontSizeValue;
+            size;
     }
 
 
     /*
-       TULIS TIMESTAMP
-    */
+     * TULIS TIMESTAMP
+     */
 
     ctx.fillText(
-        timestampValue,
+        stamp,
         x,
         y
     );
 
 
     /*
-       GPS
-    */
+     * GPS
+     */
 
     if (
         showLocation.checked &&
-        gpsLatitude !== null
+        latitude !== null &&
+        longitude !== null
     ) {
 
-        const gps =
-            `📍 ${gpsLatitude.toFixed(6)}, ${gpsLongitude.toFixed(6)}`;
-
-
         ctx.font =
-            `500 ${Math.round(
-                fontSizeValue * .52
-            )}px Arial`;
+            `500 ${Math.round(size * 0.5)}px Arial`;
 
 
         ctx.fillText(
-            gps,
+            `GPS: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
             x,
-            y +
-                fontSizeValue * .65
+            y + size * 0.65
         );
     }
 
 
     /*
-       WATERMARK
-    */
+     * WATERMARK
+     */
 
     if (
-        watermarkInput.value
+        watermarkInput.value.trim()
     ) {
 
         ctx.font =
-            `600 ${Math.round(
-                fontSizeValue * .52
-            )}px Arial`;
+            `600 ${Math.round(size * 0.5)}px Arial`;
 
 
         ctx.fillText(
-            watermarkInput.value,
+            watermarkInput.value.trim(),
             x,
-            y +
-                fontSizeValue * 1.25
+            y + size * 1.25
         );
     }
 
 
-    ctx.shadowBlur =
-        0;
+    /*
+     * Hapus shadow
+     */
 
-    ctx.shadowOffsetX =
-        0;
+    ctx.shadowBlur = 0;
 
-    ctx.shadowOffsetY =
-        0;
+    ctx.shadowOffsetX = 0;
+
+    ctx.shadowOffsetY = 0;
 
 
     /*
-       SIMPAN
-    */
+     * SIMPAN JPEG
+     */
 
     canvas.toBlob(
 
-        blob => {
+        function(blob) {
 
             if (!blob) {
 
-                showToast(
+                showError(
                     "Gagal membuat foto."
                 );
 
@@ -927,28 +692,21 @@ function capturePhoto() {
 
 
             const url =
-                URL.createObjectURL(
-                    blob
-                );
+                URL.createObjectURL(blob);
 
 
             const link =
-                document.createElement(
-                    "a"
-                );
+                document.createElement("a");
 
 
-            link.href =
-                url;
+            link.href = url;
 
 
             link.download =
-                `Timestamp_${year}-${month}-${day}_${hours}-${minutes}-${seconds}.jpg`;
+                `Timestamp_${year}-${month}-${day}_${hour}-${minute}-${second}.jpg`;
 
 
-            document.body.appendChild(
-                link
-            );
+            document.body.appendChild(link);
 
 
             link.click();
@@ -958,16 +716,19 @@ function capturePhoto() {
 
 
             setTimeout(
-                () =>
+                function() {
+
                     URL.revokeObjectURL(
                         url
-                    ),
+                    );
+
+                },
                 2000
             );
 
 
             showToast(
-                "Foto timestamp dibuat."
+                "Foto berhasil dibuat"
             );
 
         },
@@ -980,112 +741,166 @@ function capturePhoto() {
 
 
 /* =========================================
-   GALLERY BUTTON
-   ========================================= */
+   SETTINGS
+========================================= */
 
-document
-    .getElementById("galleryButton")
-    .addEventListener(
-        "click",
-        () => {
-
-            showToast(
-                "Foto tersimpan melalui Safari."
-            );
-        }
-    );
-
-
-/* =========================================
-   TOAST
-   ========================================= */
-
-function showToast(message) {
-
-    const toast =
-        document.getElementById(
-            "toast"
-        );
-
-
-    toast.textContent =
-        message;
-
-
-    toast.classList.add(
-        "show"
-    );
-
-
-    setTimeout(
-        () => {
-
-            toast.classList.remove(
-                "show"
-            );
-
-        },
-        2200
-    );
-}
-
-
-/* =========================================
-   FOCUS TAP
-   ========================================= */
-
-camera.addEventListener(
+settingsButton.addEventListener(
     "click",
-    event => {
+    function() {
 
-        const box =
-            document.getElementById(
-                "focusBox"
-            );
-
-
-        box.style.left =
-            `${event.clientX}px`;
+        settingsPanel.classList.remove(
+            "hidden"
+        );
+    }
+);
 
 
-        box.style.top =
-            `${event.clientY}px`;
+closeSettings.addEventListener(
+    "click",
+    function() {
+
+        settingsPanel.classList.add(
+            "hidden"
+        );
+    }
+);
 
 
-        box.style.display =
-            "block";
+closeSettingsButton.addEventListener(
+    "click",
+    function() {
 
-
-        setTimeout(
-            () => {
-
-                box.style.left =
-                    "50%";
-
-                box.style.top =
-                    "50%";
-
-            },
-            700
+        settingsPanel.classList.add(
+            "hidden"
         );
     }
 );
 
 
 /* =========================================
+   SETTINGS EVENTS
+========================================= */
+
+showLocation.addEventListener(
+    "change",
+    updateGPSDisplay
+);
+
+
+showSeconds.addEventListener(
+    "change",
+    updateTimestamp
+);
+
+
+fontSize.addEventListener(
+    "input",
+    function() {
+
+        timestamp.style.fontSize =
+            fontSize.value + "px";
+    }
+);
+
+
+timestampPosition.addEventListener(
+    "change",
+    function() {
+
+        timestamp.classList.remove(
+            "bottom-right",
+            "top-left",
+            "top-right"
+        );
+
+
+        if (
+            timestampPosition.value !==
+            "bottom-left"
+        ) {
+
+            timestamp.classList.add(
+                timestampPosition.value
+            );
+        }
+    }
+);
+
+
+watermarkInput.addEventListener(
+    "input",
+    updateTimestamp
+);
+
+
+/* =========================================
+   MESSAGE
+========================================= */
+
+function showToast(message) {
+
+    toast.textContent =
+        message;
+
+    toast.classList.add("show");
+
+
+    setTimeout(
+        function() {
+
+            toast.classList.remove(
+                "show"
+            );
+
+        },
+        2500
+    );
+}
+
+
+function showError(message) {
+
+    /*
+     * Tampilkan error secara jelas
+     * supaya kita tahu penyebabnya.
+     */
+
+    toast.textContent =
+        message;
+
+    toast.classList.add("show");
+
+
+    console.error(message);
+
+
+    setTimeout(
+        function() {
+
+            toast.classList.remove(
+                "show"
+            );
+
+        },
+        5000
+    );
+}
+
+
+/* =========================================
    CLEANUP
-   ========================================= */
+========================================= */
 
 window.addEventListener(
     "pagehide",
-    () => {
+    function() {
 
         if (stream) {
 
             stream
                 .getTracks()
-                .forEach(track =>
-                    track.stop()
+                .forEach(
+                    track => track.stop()
                 );
         }
     }
